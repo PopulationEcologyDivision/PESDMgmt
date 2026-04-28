@@ -103,5 +103,6 @@ getPESDMailingLists <- function(group = "all") {
     return(result)
   }
 
-  dplyr::bind_rows(lapply(groups_to_fetch, fetch_group)) |> dplyr::arrange(displayName)
+  res <- dplyr::bind_rows(lapply(groups_to_fetch, fetch_group)) |> dplyr::arrange(displayName)
+  return(res)
 }
