@@ -1,0 +1,35 @@
+#' @title getPESDPermissionsListCSV
+#' @description
+#' Connects to the PESD Management Team SharePoint site and retrieves an exported csv version of "Staff_Permissions"
+#' list, returning it as a data frame.  The original list lives at
+#' https://086gc.sharepoint.com/sites/msteams_74c888-ManagementTeam/Lists/Staff_Permissions/AllItems.aspx but MS tools
+#' don't allow the extraction of staff names, which exist in the csv. Power Automate is used to extract the list to csv
+#' every day.
+#'
+#' This function fetches permission-related details for staff as maintained in the PESD SharePoint Online list. Columns
+#' include employee identifier, organizational unit, mailing lists, employee roles, and permission confirmations. Only
+#' the most relevant metadata columns are returned.
+
+#' @author  Mike McMahon, \email{Mike.McMahon@@dfo-mpo.gc.ca}
+#' @returns
+#' @export
+getPESDPermissionsListCSV <- function(){
+  site <- Microsoft365R::get_sharepoint_site(site_url="https://086gc.sharepoint.com/sites/msteams_74c888-ManagementTeam")
+  drive <- site$get_drive()
+  tmp <- tempfile(fileext = ".csv")
+  drive$download_file(
+    src = "Management Team/automation/staff_permissions.csv",
+    dest = tmp,
+    overwrite = TRUE
+  )
+  df <- utils::read.csv(tmp, stringsAsFactors = FALSE)
+  df$displayName <- sapply(df$EmployeeName, function(x) jsonlite::fromJSON(x)$DisplayName)
+  df$HomeUnit   <- sapply(df$HomeUnit, function(x) jsonlite::fromJSON(x)$Value)
+  df$LOC <- sapply(df$Location, function(x) jsonlite::fromJSON(x)$Value)
+  df$MailingList <- sapply(df$MailingList, function(x) jsonlite::fromJSON(x)$Value)
+  df$email      <- tolower(sub("i:0#.f\\|membership\\|", "", df$EmployeeName.Claims))
+  df$SECTION     <- trimws(sub(":.*", "", df$HomeUnit))
+  df$UNIT        <- trimws(sub(".*:", "", df$HomeUnit))
+  df <- df[,c("displayName", "email", "UnitLead", "SECTION", "UNIT", "LOC", "MailingList")]
+  return(df)
+}
