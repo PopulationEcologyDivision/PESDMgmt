@@ -80,40 +80,40 @@ autoMakeEmailList <- function(by = "all", debug = F) {
 
   mailing_lists <- mailing_lists |>
     dplyr::rename_with(~ paste0("outlk_", .)) |>
-    dplyr::select(outlk_mail, outlk_displayName, outlk_LOC, outlk_MAIL_LIST) |>
-    dplyr::arrange(outlk_displayName)
+    dplyr::select(outlk_EMAIL, outlk_DISPLAYNAME , outlk_LOCATION, outlk_MAILLIST) |>
+    dplyr::arrange(outlk_DISPLAYNAME )
 
   permissions <- permissions |>
     dplyr::rename_with(~ paste0("permiss_", .)) |>
-    dplyr::select(permiss_displayName, permiss_email, permiss_UnitLead, permiss_SECTION, permiss_UNIT, permiss_LOC) |>
-    dplyr::arrange(permiss_displayName)
+    dplyr::select(permiss_DISPLAYNAME , permiss_EMAIL, permiss_UNITLEAD, permiss_SECTION, permiss_UNIT, permiss_LOCATION) |>
+    dplyr::arrange(permiss_DISPLAYNAME )
 
     site_members <-  site_members |>
     dplyr::rename_with(~ paste0("sp_", .)) |>
-    dplyr::select(sp_displayName, sp_mail, sp_LOC) |>
-    dplyr::arrange(sp_displayName)
+    dplyr::select(sp_DISPLAYNAME , sp_EMAIL, sp_LOCATION) |>
+    dplyr::arrange(sp_DISPLAYNAME )
 
     res <- list()
   if (grepl("all",by,ignore.case = T)){
-    res[["all"]] <- paste(mailing_lists$outlk_mail, collapse = ";")
+    res[["all"]] <- paste(mailing_lists$outlk_EMAIL, collapse = ";")
   }else if (grepl("loc",by,ignore.case = T)){
-    cats <- unique(mailing_lists$outlk_LOC)
+    cats <- unique(mailing_lists$outlk_LOCATION)
     for (cat in cats) {
-      subset_data <- mailing_lists[mailing_lists$outlk_LOC == cat, ]
-      res[[cat]] <- paste(subset_data$outlk_mail, collapse = ";")
+      subset_data <- mailing_lists[mailing_lists$outlk_LOCATION == cat, ]
+      res[[cat]] <- paste(subset_data$outlk_EMAIL, collapse = ";")
     }
   }else if (grepl("list",by,ignore.case = T)){
-    cats <- unique(mailing_lists$outlk_MAIL_LIST)
+    cats <- unique(mailing_lists$outlk_MAILLIST)
     for (cat in cats) {
-      subset_data <- mailing_lists[mailing_lists$outlk_MAIL_LIST == cat, ]
-      res[[cat]] <- paste(subset_data$outlk_mail, collapse = ";")
+      subset_data <- mailing_lists[mailing_lists$outlk_MAILLIST == cat, ]
+      res[[cat]] <- paste(subset_data$outlk_EMAIL, collapse = ";")
     }
     cat("In addition to the listed staff, the mailing list 'DFO.RMARSciencePED-ScienceDEPMARR.MPO@dfo-mpo.gc.ca' also
 includes all of the members of all of the other listed mailing lists\n")
   }else if (grepl("sect",by,ignore.case = T)){
     cat("Section info is stored separately from Outlook, and may not be present for all staff\n")
-    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_mail" = "permiss_email"), keep = T)
-    joined <- joined[!is.na(joined$outlk_mail),]
+    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_EMAIL" = "permiss_EMAIL"), keep = T)
+    joined <- joined[!is.na(joined$outlk_EMAIL),]
     cats <- unique(joined$permiss_SECTION)
 
     for (cat in cats) {
@@ -122,31 +122,31 @@ includes all of the members of all of the other listed mailing lists\n")
         res[["NA"]] <- paste(subset_data$outlk_mail, collapse = ";")
       } else {
         subset_data <- joined[!is.na(joined$permiss_SECTION) & joined$permiss_SECTION == cat, ]
-        res[[cat]] <- paste(subset_data$outlk_mail, collapse = ";")
+        res[[cat]] <- paste(subset_data$outlk_EMAIL, collapse = ";")
       }
     }
 
   }else if (grepl("unit",by,ignore.case = T)){
     cat("Unit info is stored separately from Outlook, and may not be present for all staff\n")
-    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_mail" = "permiss_email"), keep = T)
-    joined <- joined[!is.na(joined$outlk_mail),]
+    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_EMAIL" = "permiss_EMAIL"), keep = T)
+    joined <- joined[!is.na(joined$outlk_EMAIL),]
     cats <- unique(joined$permiss_UNIT)
 
     for (cat in cats) {
       if (is.na(cat)) {
         subset_data <- joined[is.na(joined$permiss_UNIT), ]
-        res[["NA"]] <- paste(subset_data$outlk_mail, collapse = ";")
+        res[["NA"]] <- paste(subset_data$outlk_EMAIL, collapse = ";")
       } else {
         subset_data <- joined[!is.na(joined$permiss_UNIT) & joined$permiss_UNIT ==  cat, ]
-        res[[cat]] <- paste(subset_data$outlk_mail, collapse = ";")
+        res[[cat]] <- paste(subset_data$outlk_EMAIL, collapse = ";")
       }
     }
   }else if (grepl("lead",by,ignore.case = T)){
     cat("Unit lead info is stored separately from Outlook, and may not be present for all staff\n")
-    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_mail" = "permiss_email"), keep = T)
-    joined <- joined[!is.na(joined$outlk_mail),]
-    joined <- joined[which(joined$permiss_UnitLead=="True"),]
-    res[["leads"]] <- paste(joined[which(joined$permiss_UnitLead=="True"),"outlk_mail"], collapse = ";")
+    joined <- dplyr::full_join(mailing_lists, permissions, by = c("outlk_EMAIL" = "permiss_EMAIL"), keep = T)
+    joined <- joined[!is.na(joined$outlk_EMAIL),]
+    joined <- joined[which(joined$permiss_UNITLEAD=="True"),]
+    res[["leads"]] <- paste(joined[which(joined$permiss_UNITLEAD=="True"),"outlk_EMAIL"], collapse = ";")
   }
   return(res)
   #QC

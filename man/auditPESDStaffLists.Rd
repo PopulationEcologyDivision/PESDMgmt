@@ -4,15 +4,14 @@
 \alias{auditPESDStaffLists}
 \title{auditPESDStaffLists}
 \usage{
-auditPESDStaffLists(permissions, mailing_lists, site_members)
+auditPESDStaffLists(debug = F)
 }
 \arguments{
-\item{permissions}{Data frame. Output of \code{getPESDPermissionsListCSV()}. Must contain an
-\code{EmployeeName.Claims} column in the format \code{i:0#.f|membership|firstname.lastname@dfo-mpo.gc.ca}.}
-
-\item{mailing_lists}{Data frame. Output of \code{getDistributionGroupMembers()}. Must contain a \code{mail} column.}
-
-\item{site_members}{Data frame. Output of \code{getSharepointSiteMembers()}. Must contain a \code{mail} column.}
+\item{debug}{logical. If \code{TRUE}, the function will use pre-existing
+objects from the global environment (\code{PESDPermissionsListCSV},
+\code{SharepointSiteMembers}, \code{PESDMailingLists}) rather than
+fetching fresh data. Useful for development and testing. Default is
+\code{FALSE}.}
 }
 \value{
 Invisibly returns a data frame with columns:
@@ -38,7 +37,6 @@ invisibly as a data frame for further programmatic use.
 }
 \examples{
 \dontrun{
-permissions   <- getPESDPermissionsListCSV()
 mailing_lists <- getDistributionGroupMembers()
 site_members  <- getSharepointSiteMembers()
 

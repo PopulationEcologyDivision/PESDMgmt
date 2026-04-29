@@ -11,11 +11,11 @@
 #' Results are printed to the console as a formatted table and returned
 #' invisibly as a data frame for further programmatic use.
 #'
-#' @param permissions Data frame. Output of \code{getPESDPermissionsListCSV()}. Must contain an
-#' \code{EmployeeName.Claims} column in the format \code{i:0#.f|membership|firstname.lastname@@dfo-mpo.gc.ca}.
-#' @param mailing_lists Data frame. Output of \code{getDistributionGroupMembers()}. Must contain a \code{mail} column.
-#' @param site_members Data frame. Output of \code{getSharepointSiteMembers()}. Must contain a \code{mail} column.
-#'
+#' @param debug logical. If \code{TRUE}, the function will use pre-existing
+#'   objects from the global environment (\code{PESDPermissionsListCSV},
+#'   \code{SharepointSiteMembers}, \code{PESDMailingLists}) rather than
+#'   fetching fresh data. Useful for development and testing. Default is
+#'   \code{FALSE}.
 #' @return Invisibly returns a data frame with columns:
 #'   \describe{
 #'     \item{email}{Email address}
@@ -30,7 +30,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' permissions   <- getPESDPermissionsListCSV()
+# permissions   <- getPESDPermissionsListCSV()
 #' mailing_lists <- getDistributionGroupMembers()
 #' site_members  <- getSharepointSiteMembers()
 #'
@@ -41,10 +41,21 @@
 #' audit <- auditPESDStaffLists(permissions, mailing_lists, site_members)
 #' audit[!audit$permissions, ]  # emails missing from permissions
 #' }
-auditPESDStaffLists <- function(permissions, mailing_lists, site_members) {
-  emails_permissions <- tolower(permissions$email)
-  emails_mailing     <- tolower(mailing_lists$mail)
-  emails_site        <- tolower(site_members$mail)
+auditPESDStaffLists <- function(debug=F) {
+  if (!debug){
+    message("extracting!|")
+    permissions <- getPESDPermissionsListCSV()
+    site_members <- getSharepointSiteMembers()
+    mailing_lists <- getPESDMailingLists("all")
+  }else{
+    permissions <-.GlobalEnv$PESDPermissionsListCSV
+    site_members <-.GlobalEnv$SharepointSiteMembers
+    mailing_lists <-.GlobalEnv$PESDMailingLists
+  }
+
+  emails_permissions <- tolower(permissions$EMAIL)
+  emails_mailing     <- tolower(mailing_lists$EMAIL)
+  emails_site        <- tolower(site_members$EMAIL)
 
   all_emails <- unique(c(emails_permissions, emails_mailing, emails_site))
 

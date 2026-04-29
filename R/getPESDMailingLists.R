@@ -77,32 +77,33 @@ getPESDMailingLists <- function(group = "all") {
     httr::stop_for_status(resp2)
     result <- httr::content(resp2, as = "parsed", simplifyVector = TRUE)$value
     result$`@odata.type` <- NULL
-    result$LOC <- NA
-    result$section <- group_name
-    result$MAIL_LIST <- group_email
-    result$mail <- tolower(result$mail)
-    result <- result[!tolower(result$mail) %in% group_emails, ]
-    result[grepl("BIO|Fish Lab|Fishlab|Strickland|Ellis|Bedford|Steenburg", result$officeLocation, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("Andrews|George|Penhallow|SABS", result$officeLocation, ignore.case = T),"LOC"] <- "SABS"
-    result[grepl("MACTAQUAC", result$officeLocation, ignore.case = T),"LOC"] <- "MACTAQUAC"
-    result[grepl("COLDBROOK", result$officeLocation, ignore.case = T),"LOC"] <- "COLDBROOK"
-    result[grepl("Yarmouth", result$officeLocation, ignore.case = T),"LOC"] <- "YARMOUTH"
+    result$LOCATION <- NA
+    result$SECTION <- group_name
+    result$MAILLIST <- group_email
+    result$EMAIL <- tolower(result$mail)
+    result <- result[!tolower(result$EMAIL) %in% group_emails, ]
+    result[grepl("BIO|Fish Lab|Fishlab|Strickland|Ellis|Bedford|Steenburg", result$officeLocation, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("Andrews|George|Penhallow|SABS", result$officeLocation, ignore.case = T),"LOCATION"] <- "SABS"
+    result[grepl("MACTAQUAC", result$officeLocation, ignore.case = T),"LOCATION"] <- "MACTAQUAC"
+    result[grepl("COLDBROOK", result$officeLocation, ignore.case = T),"LOCATION"] <- "COLDBROOK"
+    result[grepl("Yarmouth", result$officeLocation, ignore.case = T),"LOCATION"] <- "YARMOUTH"
 
-    result[grepl("king",result$displayName, ignore.case = T)&grepl("king",result$displayName, ignore.case = T) ,"LOC"] <- "OTHER"
-    result[grepl("glass",result$displayName, ignore.case = T)&grepl("amy",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("broome",result$displayName, ignore.case = T)&grepl("jeremy",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("megan",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("tyler",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("bowlby",result$displayName, ignore.case = T)&grepl("heather",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("billard",result$displayName, ignore.case = T)&grepl("mark",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("taylor",result$displayName, ignore.case = T)&grepl("andrew",result$displayName, ignore.case = T),"LOC"] <- "BIO"
-    result[grepl("collier",result$displayName, ignore.case = T)&grepl("lynn",result$displayName, ignore.case = T),"LOC"] <- "SABS"
-    result[grepl("li",result$displayName, ignore.case = T)&grepl("lingbo",result$displayName, ignore.case = T),"LOC"] <- "OTHER"
-    result[grepl("finley",result$displayName, ignore.case = T)&grepl("monica",result$displayName, ignore.case = T),"LOC"] <- "SABS"
-    result[is.na(result$LOC),"LOC"] <- "OTHER"
+    result[grepl("king",result$displayName, ignore.case = T)&grepl("king",result$displayName, ignore.case = T) ,"LOCATION"] <- "OTHER"
+    result[grepl("glass",result$displayName, ignore.case = T)&grepl("amy",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("broome",result$displayName, ignore.case = T)&grepl("jeremy",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("megan",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("tyler",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("bowlby",result$displayName, ignore.case = T)&grepl("heather",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("billard",result$displayName, ignore.case = T)&grepl("mark",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("taylor",result$displayName, ignore.case = T)&grepl("andrew",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("collier",result$displayName, ignore.case = T)&grepl("lynn",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
+    result[grepl("li",result$displayName, ignore.case = T)&grepl("lingbo",result$displayName, ignore.case = T),"LOCATION"] <- "OTHER"
+    result[grepl("finley",result$displayName, ignore.case = T)&grepl("monica",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
+    result[is.na(result$LOCATION),"LOCATION"] <- "OTHER"
     return(result)
   }
-
   res <- dplyr::bind_rows(lapply(groups_to_fetch, fetch_group)) |> dplyr::arrange(displayName)
+  res <- res |> dplyr::rename(DISPLAYNAME = displayName) |>
+    dplyr::select(DISPLAYNAME, EMAIL, SECTION, LOCATION, MAILLIST)
   return(res)
 }

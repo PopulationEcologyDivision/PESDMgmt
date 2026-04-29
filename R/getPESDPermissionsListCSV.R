@@ -26,13 +26,15 @@ getPESDPermissionsListCSV <- function(){
     overwrite = TRUE
   )
   df <- utils::read.csv(tmp, stringsAsFactors = FALSE)
-  df$displayName <- sapply(df$EmployeeName, function(x) jsonlite::fromJSON(x)$DisplayName)
+  df$DISPLAYNAME <- sapply(df$EmployeeName, function(x) jsonlite::fromJSON(x)$DisplayName)
   df$HomeUnit   <- sapply(df$HomeUnit, function(x) jsonlite::fromJSON(x)$Value)
-  df$LOC <- sapply(df$Location, function(x) jsonlite::fromJSON(x)$Value)
-  df$MailingList <- sapply(df$MailingList, function(x) jsonlite::fromJSON(x)$Value)
-  df$email      <- tolower(sub("i:0#.f\\|membership\\|", "", df$EmployeeName.Claims))
+  df$LOCATION <- sapply(df$Location, function(x) jsonlite::fromJSON(x)$Value)
+  df$MAILLIST <- sapply(df$MailingList, function(x) jsonlite::fromJSON(x)$Value)
+  df$EMAIL      <- tolower(sub("i:0#.f\\|membership\\|", "", df$EmployeeName.Claims))
   df$SECTION     <- trimws(sub(":.*", "", df$HomeUnit))
   df$UNIT        <- trimws(sub(".*:", "", df$HomeUnit))
-  df <- df[,c("displayName", "email", "UnitLead", "SECTION", "UNIT", "LOC", "MailingList")]
+  df$UNITLEAD   <- df$UnitLead
+  df$MANAGEMENT   <- df$Management
+  df <- df[,c("DISPLAYNAME", "EMAIL", "UNITLEAD", "SECTION", "UNIT", "LOCATION", "MAILLIST","MANAGEMENT")]
   return(df)
 }

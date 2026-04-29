@@ -47,14 +47,19 @@ getSharepointSiteMembers <- function(site = "msteams_74c888"){
     })
     as.data.frame(props, stringsAsFactors = FALSE)
   }))
-  member_df[grepl("Dartmouth", member_df$city, ignore.case = T),"LOC"] <- "BIO"
-  member_df[grepl("Andrews|George|Penhallow|SABS", member_df$city, ignore.case = T),"LOC"] <- "SABS"
-  member_df[grepl("French Village", member_df$city, ignore.case = T),"LOC"] <- "MACTAQUAC"
-  member_df[grepl("Coldbrook", member_df$city, ignore.case = T),"LOC"] <- "COLDBROOK"
-  member_df[grepl("Yarmouth", member_df$city, ignore.case = T),"LOC"] <- "YARMOUTH"
-  member_df[is.na(member_df$LOC),"LOC"] <- "OTHER"
-  member_df <- member_df[member_df$accountEnabled == "TRUE", ]
-  member_df$city <- member_df$officeLocation <- member_df$streetAddress <- NULL
-  member_df$mail <- tolower(member_df$mail)
+  member_df[grepl("Dartmouth", member_df$city, ignore.case = T),"LOCATION"] <- "BIO"
+  member_df[grepl("Andrews|George|Penhallow|SABS", member_df$city, ignore.case = T),"LOCATION"] <- "SABS"
+  member_df[grepl("French Village", member_df$city, ignore.case = T),"LOCATION"] <- "MACTAQUAC"
+  member_df[grepl("Coldbrook", member_df$city, ignore.case = T),"LOCATION"] <- "COLDBROOK"
+  member_df[grepl("Yarmouth", member_df$city, ignore.case = T),"LOCATION"] <- "YARMOUTH"
+  member_df[is.na(member_df$LOCATION),"LOCATION"] <- "OTHER"
+
+  member_df <- member_df |>
+    dplyr::rename(ACCOUNTENABLED = accountEnabled,
+                  DISPLAYNAME = displayName,
+                  EMAIL=mail) |>
+    dplyr::mutate(EMAIL = tolower(EMAIL)) |>
+    dplyr::select(DISPLAYNAME, EMAIL, LOCATION,ACCOUNTENABLED)
+
   return(member_df)
 }
