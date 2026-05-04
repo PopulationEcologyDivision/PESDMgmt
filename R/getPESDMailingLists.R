@@ -9,8 +9,8 @@
 #' fetching a single group by short name, or all groups simultaneously via \code{group = "all"}.
 #'
 #' @param group Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
-#' or \code{"all"}.
-#'  Defaults to \code{"all"}.
+#' or \code{"ALL"}.
+#'  Defaults to \code{"ALL"}.
 #'
 #' @return A data frame with one row per group member, and columns:
 #'   \describe{
@@ -21,7 +21,7 @@
 #'       (one of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"},
 #'       \code{"GPSS"})}
 #'   }
-#'   When \code{group = "all"}, rows from all five groups are concatenated.
+#'   When \code{group = "ALL"}, rows from all five groups are concatenated.
 #'   A user appearing in multiple groups will have one row per group.
 #'
 #' @author Mike McMahon, \email{Mike.McMahon@@dfo-mpo.gc.ca}
@@ -41,8 +41,8 @@
 #' # Preview results
 #' head(all_members)
 #' }
-getPESDMailingLists <- function(group = "all") {
-  group <- match.arg(group, choices = c("ADMIN", "ISAR", "SALMON", "DADSS", "GPSS", "all"))
+getPESDMailingLists <- function(group = "ALL") {
+  group <- match.arg(group, choices = c("ADMIN", "ISAR", "SALMON", "DADSS", "GPSS", "ALL"))
 
   email_map <- list(
     ADMIN  = "DFO.RMARSciencePED-ScienceDEPMARR.MPO@dfo-mpo.gc.ca",
@@ -53,7 +53,7 @@ getPESDMailingLists <- function(group = "all") {
   )
 
   group_emails <- tolower(unlist(email_map))
-  groups_to_fetch <- if (group == "all") names(email_map) else group
+  groups_to_fetch <- if (group == "ALL") names(email_map) else group
 
   site <- suppressMessages(Microsoft365R::get_sharepoint_site(site_url = "https://086gc.sharepoint.com/sites/msteams_74c888-ManagementTeam"))
   token <- site$token$credentials$access_token
@@ -88,17 +88,17 @@ getPESDMailingLists <- function(group = "all") {
     result[grepl("COLDBROOK", result$officeLocation, ignore.case = T),"LOCATION"] <- "COLDBROOK"
     result[grepl("Yarmouth", result$officeLocation, ignore.case = T),"LOCATION"] <- "YARMOUTH"
 
-    result[grepl("king",result$displayName, ignore.case = T)&grepl("king",result$displayName, ignore.case = T) ,"LOCATION"] <- "OTHER"
-    result[grepl("glass",result$displayName, ignore.case = T)&grepl("amy",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("broome",result$displayName, ignore.case = T)&grepl("jeremy",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("megan",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("wilson",result$displayName, ignore.case = T)&grepl("tyler",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("bowlby",result$displayName, ignore.case = T)&grepl("heather",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("billard",result$displayName, ignore.case = T)&grepl("mark",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("taylor",result$displayName, ignore.case = T)&grepl("andrew",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
-    result[grepl("collier",result$displayName, ignore.case = T)&grepl("lynn",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
-    result[grepl("li",result$displayName, ignore.case = T)&grepl("lingbo",result$displayName, ignore.case = T),"LOCATION"] <- "OTHER"
-    result[grepl("finley",result$displayName, ignore.case = T)&grepl("monica",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
+    result[grepl("ing, mauree",result$displayName, ignore.case = T) ,"LOCATION"] <- "OTHER"
+    result[grepl("lass, am",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("oome, jere",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("ilson, mega",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("ilson, tyl",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("owlby, heat",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("llard, mar",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("ylor, andr",result$displayName, ignore.case = T),"LOCATION"] <- "BIO"
+    result[grepl("llier, lyn",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
+    result[grepl("li, lingb",result$displayName, ignore.case = T),"LOCATION"] <- "OTHER"
+    result[grepl("nley, mon",result$displayName, ignore.case = T),"LOCATION"] <- "SABS"
     result[is.na(result$LOCATION),"LOCATION"] <- "OTHER"
     return(result)
   }

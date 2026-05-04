@@ -34,6 +34,7 @@
 #' head(members)
 #' }
 getSharepointSiteMembers <- function(site = "msteams_74c888"){
+  site <- match.arg(site, choices = c("msteams_74c888", "pesddadss", "pesdisar", "pesdgpss", "pesdsalmon", "msteams_74c888-ManagementTeam"))
   site <- suppressMessages(Microsoft365R::get_sharepoint_site(site_url=paste0("https://086gc.sharepoint.com/sites/",site)))
   group <- site$get_group()
   members <- group$list_members()

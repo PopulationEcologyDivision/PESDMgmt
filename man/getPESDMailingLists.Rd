@@ -4,12 +4,12 @@
 \alias{getPESDMailingLists}
 \title{getPESDMailingLists}
 \usage{
-getPESDMailingLists(group = "all")
+getPESDMailingLists(group = "ALL")
 }
 \arguments{
 \item{group}{Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
-or \code{"all"}.
- Defaults to \code{"all"}.}
+or \code{"ALL"}.
+ Defaults to \code{"ALL"}.}
 }
 \value{
 A data frame with one row per group member, and columns:
@@ -21,7 +21,7 @@ A data frame with one row per group member, and columns:
       (one of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"},
       \code{"GPSS"})}
   }
-  When \code{group = "all"}, rows from all five groups are concatenated.
+  When \code{group = "ALL"}, rows from all five groups are concatenated.
   A user appearing in multiple groups will have one row per group.
 }
 \description{

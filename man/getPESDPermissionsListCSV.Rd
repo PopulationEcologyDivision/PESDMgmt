@@ -4,7 +4,17 @@
 \alias{getPESDPermissionsListCSV}
 \title{getPESDPermissionsListCSV}
 \usage{
-getPESDPermissionsListCSV()
+getPESDPermissionsListCSV(name = NULL, section = NULL, unit = NULL)
+}
+\arguments{
+\item{name}{Defaults to \code{NULL}.This is a filter - text entered here will limit the results to only those records containing your
+string in the name field (e.g entering "Mik", would return entries with names like "Mike).}
+
+\item{section}{Defaults to \code{NULL}. This is a filter - valid values include \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
+or \code{"ALL"}.}
+
+\item{unit}{Defaults to \code{NULL}.  This is a filter - text entered here will limit the results to only those records containing your
+string in the unit field (e.g. entering "TURT" would return the entries for the turtle unit)}
 }
 \value{
 A data frame

@@ -71,7 +71,7 @@ autoMakeEmailList <- function(by = "all", debug = F) {
     message("extracting!|")
     permissions <- getPESDPermissionsListCSV()
     site_members <- getSharepointSiteMembers()
-    mailing_lists <- getPESDMailingLists("all")
+    mailing_lists <- getPESDMailingLists("ALL")
   }else{
     permissions <-.GlobalEnv$PESDPermissionsListCSV
     site_members <-.GlobalEnv$SharepointSiteMembers
@@ -85,7 +85,7 @@ autoMakeEmailList <- function(by = "all", debug = F) {
 
   permissions <- permissions |>
     dplyr::rename_with(~ paste0("permiss_", .)) |>
-    dplyr::select(permiss_DISPLAYNAME , permiss_EMAIL, permiss_UNITLEAD, permiss_SECTION, permiss_UNIT, permiss_LOCATION) |>
+    dplyr::select(permiss_DISPLAYNAME , permiss_EMAIL,permiss_IS_MANAGEMENT, permiss_IS_UNITLEAD, permiss_SECTION, permiss_UNIT, permiss_LOCATION) |>
     dplyr::arrange(permiss_DISPLAYNAME )
 
     site_members <-  site_members |>

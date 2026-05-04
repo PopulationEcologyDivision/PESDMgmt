@@ -4,9 +4,25 @@
 \alias{auditPESDStaffLists}
 \title{auditPESDStaffLists}
 \usage{
-auditPESDStaffLists(debug = F)
+auditPESDStaffLists(
+  maillist = NULL,
+  sp_site = NULL,
+  perm_sect = NULL,
+  show_all_staff = FALSE,
+  debug = F
+)
 }
 \arguments{
+\item{maillist}{Defaults to \code{"ALL"}. Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
+or \code{"ALL"}.}
+
+\item{sp_site}{Defaults to \code{"msteams_74c888"}. Character string. The short name or unique ID of the SharePoint
+Online site.}
+
+\item{perm_sect}{Defaults to \code{"ALL"}. Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},}
+
+\item{show_all_staff}{Defaults to \code{"FALSE"}. If \code{"TRUE"}, then all staff will be listed.  Otherwise, only staff with discrepencies will be shown.}
+
 \item{debug}{logical. If \code{TRUE}, the function will use pre-existing
 objects from the global environment (\code{PESDPermissionsListCSV},
 \code{SharepointSiteMembers}, \code{PESDMailingLists}) rather than
@@ -47,6 +63,7 @@ auditPESDStaffLists(permissions, mailing_lists, site_members)
 audit <- auditPESDStaffLists(permissions, mailing_lists, site_members)
 audit[!audit$permissions, ]  # emails missing from permissions
 }
+
 }
 \author{
 Mike McMahon, \email{Mike.McMahon@dfo-mpo.gc.ca}

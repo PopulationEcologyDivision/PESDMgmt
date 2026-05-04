@@ -10,7 +10,12 @@
 #'
 #' Results are printed to the console as a formatted table and returned
 #' invisibly as a data frame for further programmatic use.
-#'
+#' @param maillist Defaults to \code{"ALL"}. Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
+#' or \code{"ALL"}.
+#' @param sp_site Defaults to \code{"msteams_74c888"}. Character string. The short name or unique ID of the SharePoint
+#' Online site.
+#' @param perm_sect Defaults to \code{"ALL"}. Character string. One of \code{"ADMIN"}, \code{"ISAR"}, \code{"SALMON"}, \code{"DADSS"}, \code{"GPSS"},
+#' @param show_all_staff Defaults to \code{"FALSE"}. If \code{"TRUE"}, then all staff will be listed.  Otherwise, only staff with discrepencies will be shown.
 #' @param debug logical. If \code{TRUE}, the function will use pre-existing
 #'   objects from the global environment (\code{PESDPermissionsListCSV},
 #'   \code{SharepointSiteMembers}, \code{PESDMailingLists}) rather than
@@ -41,17 +46,18 @@
 #' audit <- auditPESDStaffLists(permissions, mailing_lists, site_members)
 #' audit[!audit$permissions, ]  # emails missing from permissions
 #' }
-auditPESDStaffLists <- function(debug=F) {
-  if (!debug){
-    message("extracting!|")
-    permissions <- getPESDPermissionsListCSV()
-    site_members <- getSharepointSiteMembers()
-    mailing_lists <- getPESDMailingLists("all")
-  }else{
-    permissions <-.GlobalEnv$PESDPermissionsListCSV
-    site_members <-.GlobalEnv$SharepointSiteMembers
-    mailing_lists <-.GlobalEnv$PESDMailingLists
-  }
+#'
+auditPESDStaffLists <- function(maillist=NULL, sp_site = NULL, perm_sect=NULL, show_all_staff = FALSE, debug=F) {
+      if (is.null(maillist)) maillist = "ALL"
+      if (is.null(sp_site)) sp_site = "msteams_74c888"
+      if (is.null(perm_sect)) perm_sect = NULL
+      sp_site <- match.arg(sp_site, choices = c("msteams_74c888", "pesddadss", "pesdisar", "pesdgpss", "pesdsalmon", "msteams_74c888-ManagementTeam"))
+      maillist <- match.arg(maillist, choices = c("ADMIN", "ISAR", "SALMON", "DADSS", "GPSS", "ALL"))
+
+   message("extracting!")
+    permissions <- getPESDPermissionsListCSV(section = perm_sect) #none
+    site_members <- getSharepointSiteMembers(site = sp_site)
+    mailing_lists <- getPESDMailingLists(group = maillist)
 
   emails_permissions <- tolower(permissions$EMAIL)
   emails_mailing     <- tolower(mailing_lists$EMAIL)
@@ -69,7 +75,7 @@ auditPESDStaffLists <- function(debug=F) {
   )
 
   # Only report emails that are not in all three sources
-  audit_df <- audit_df[!(audit_df$permissions & audit_df$mailing & audit_df$site), ]
+  if(!show_all_staff)  audit_df <- audit_df[!(audit_df$permissions & audit_df$mailing & audit_df$site), ]
   audit_df <- audit_df[order(audit_df$email), ]
 
   cat(sprintf("%-45s %-20s %-20s %-20s\n", "Email", "Lib Permissions", "Mailing Lists", "Sharepoint Site"))
